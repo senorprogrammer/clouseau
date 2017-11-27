@@ -1,48 +1,88 @@
 package modules
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 )
 
+type ConfigEntry struct {
+	Key           string
+	Value         string
+	EqualsDefault bool
+}
+
+func NewConfigEntry(key, value string, equalsDefault bool) *ConfigEntry {
+	configEntry := ConfigEntry{
+		Key:           key,
+		Value:         value,
+		EqualsDefault: equalsDefault,
+	}
+
+	return &configEntry
+}
+
+/* -------------------- -------------------- */
+
 type ConfigFile struct {
-	Entries map[string]string
+	Entries map[string]*ConfigEntry
 	Name    string
 	Path    *string
 }
 
 func NewConfigFile(path *string) *ConfigFile {
 	configFile := ConfigFile{
+		Entries: make(map[string]*ConfigEntry),
 		Name:    filepath.Base(*path),
 		Path:    path,
-		Entries: make(map[string]string),
 	}
+
+	configFile.parseFile()
 
 	return &configFile
 }
 
 func (configFile *ConfigFile) Append(line string) {
-	if len(line) == 0 {
-		return
-	}
-
-	if string(line[0]) == "#" {
+	/*
+	* If there's an empty line, or a commented-out line, don't try to parse that line
+	 */
+	if (len(line) == 0) || (string(line[0]) == "#") {
 		return
 	}
 
 	parts := strings.SplitN(line, ":", 2)
 
 	if len(parts) > 1 {
-		first := stripQuotes(strings.TrimSpace(parts[0]))
-		last := stripQuotes(strings.TrimSpace(parts[1]))
+		key := stripQuotes(strings.TrimSpace(parts[0]))
+		value := stripQuotes(strings.TrimSpace(parts[1]))
 
-		fmt.Printf("%s : %s\n", first, last)
-
-		configFile.Entries[first] = last
+		configEntry := NewConfigEntry(key, value, false)
+		configFile.Entries[key] = configEntry
 	}
+}
+
+func (configFile *ConfigFile) IsEmpty() bool {
+	return configFile.Len() == 0
 }
 
 func (configFile *ConfigFile) Len() int {
 	return len(configFile.Entries)
+}
+
+func (configFile *ConfigFile) String() string {
+	return fmt.Sprintf("%s: %d", configFile.Name, configFile.Len())
+}
+
+/* -------------------- Private Functions -------------------- */
+
+func (configFile *ConfigFile) parseFile() {
+	file, _ := os.Open(*configFile.Path)
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		configFile.Append(scanner.Text())
+	}
 }

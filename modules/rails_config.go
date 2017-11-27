@@ -1,7 +1,6 @@
 package modules
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -25,17 +24,42 @@ func NewRailsConfig(path *string) *RailsConfig {
 		RailsPath: path,
 	}
 
+	/*
+	* Defines the base configuration file from which all others will either inherit or over-ride
+	 */
 	baseConfig := strings.Join([]string{*path, "config", "settings.yml"}, "/")
 	railsConf.ConfigPaths = append(railsConf.ConfigPaths, baseConfig)
 
 	return &railsConf
 }
 
-func (railsConf *RailsConfig) Check() {
-	keys := railsConf.flattenKeys()
-	sort.Strings(keys)
+/* -------------------- Public Functions -------------------- */
 
-	fmt.Printf("%v", keys)
+func (railsConf *RailsConfig) ConfigFileByName(name string) *ConfigFile {
+	for _, configFile := range railsConf.ConfigFiles {
+		if configFile.Name == name {
+			return configFile
+		}
+	}
+	return nil
+}
+
+func (railsConf *RailsConfig) Keys() []string {
+	exists := map[string]bool{}
+	result := []string{}
+
+	for _, configFile := range railsConf.ConfigFiles {
+		for key, _ := range configFile.Entries {
+			if exists[key] != true {
+				exists[key] = true
+				result = append(result, key)
+			}
+		}
+	}
+
+	sort.Strings(result)
+
+	return result
 }
 
 func (railsConf *RailsConfig) Load(path *string) {
@@ -51,22 +75,6 @@ func (railsConf *RailsConfig) Len() int {
 
 /* -------------------- Private Functions -------------------- */
 
-func (railsConf *RailsConfig) flattenKeys() []string {
-	exists := map[string]bool{}
-	result := []string{}
-
-	for _, configFile := range railsConf.ConfigFiles {
-		for key, _ := range configFile.Entries {
-			if exists[key] != true {
-				exists[key] = true
-				result = append(result, key)
-			}
-		}
-	}
-
-	return result
-}
-
 func (railsConf *RailsConfig) isYamlFile(path string) bool {
 	yamlExtensions := []string{".yml", ".yaml"}
 	return contains(yamlExtensions, filepath.Ext(path))
@@ -74,8 +82,6 @@ func (railsConf *RailsConfig) isYamlFile(path string) bool {
 
 func (railsConf *RailsConfig) loadConfigPaths() {
 	configPath := strings.Join([]string{*railsConf.RailsPath, "config", "settings/"}, "/")
-
-	fmt.Printf("Checking %s....\n", configPath)
 
 	var lock sync.Mutex
 
@@ -91,20 +97,14 @@ func (railsConf *RailsConfig) loadConfigPaths() {
 	})
 }
 
+/* TODO: Parallelize this operation as well */
 func (railsConf *RailsConfig) parseConfigFiles() {
 	for _, path := range railsConf.ConfigPaths {
-		file, _ := os.Open(path)
-		defer file.Close()
-
 		fmt.Println(path)
 
 		configFile := NewConfigFile(&path)
-
-		scanner := bufio.NewScanner(file)
-		for scanner.Scan() {
-			configFile.Append(scanner.Text())
+		if configFile.IsEmpty() == false {
+			railsConf.ConfigFiles = append(railsConf.ConfigFiles, configFile)
 		}
-
-		railsConf.ConfigFiles = append(railsConf.ConfigFiles, configFile)
 	}
 }
