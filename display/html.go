@@ -3,6 +3,7 @@ package display
 import (
 	"html/template"
 	"os"
+	"os/exec"
 
 	"github.com/senorprogrammer/conf_check/modules"
 )
@@ -37,6 +38,12 @@ func (htmlData *HtmlData) Render() {
 
 	err = tmpl.Execute(output, htmlData)
 	if err != nil {
+		panic(err)
+	}
+}
+
+func (htmlData *HtmlData) Show() {
+	if err := exec.Command("open", htmlData.OutputPath).Run(); err != nil {
 		panic(err)
 	}
 }

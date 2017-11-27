@@ -22,8 +22,5 @@ func main() {
 
 	display := display.NewHtmlData(railsConfig)
 	display.Render()
-
-	if err := exec.Command("open", path).Run(); err != nil {
-		return err
-	}
+	display.Show()
 }
