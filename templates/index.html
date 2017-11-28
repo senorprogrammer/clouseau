@@ -9,9 +9,11 @@
          * { font-size: 14px; }
          tfoot tr th { background-color: #F0F4F5; font-size: 14px; }
          thead tr th { background-color: #F0F4F5; font-size: 14px; }
+
+         .base_is_empty { background-color: #80A6D9; }
          .bold { font-weight: bold; }
          .c { text-align: center; }
-         .prod_is_same { background-color: #ffccd4; }
+         .prod_has_same { background-color: #fE5978; }
         </style>
     </head>
     <body>
@@ -63,7 +65,7 @@
                             <td class="bold">{{$key}}</td>
 
                             {{range $.RailsConfigScanner.ConfigFiles}}
-                            {{with .EntryAt $key}}<td class="{{if .EqualsOther}}prod_is_same{{end}}">{{.Value}}</td>{{end}}
+                            {{with .EntryAt $key}}<td class="{{if .BaseIsEmpty}}base_is_empty{{end}}{{if .EqualsOther}}prod_has_same{{end}}">{{.Value}}</td>{{end}}
                             {{end}}
                         </tr>
                         {{- end}}

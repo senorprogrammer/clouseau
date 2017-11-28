@@ -40,7 +40,7 @@ func (configFile *ConfigFile) Append(line string) {
 		key := stripQuotes(strings.TrimSpace(parts[0]))
 		value := stripQuotes(strings.TrimSpace(parts[1]))
 
-		configEntry := NewConfigEntry(key, value, false)
+		configEntry := NewConfigEntry(key, value, false, false)
 		configFile.Entries[key] = configEntry
 	}
 }
@@ -52,7 +52,7 @@ func (configFile *ConfigFile) EntryAt(key string) *ConfigEntry {
 	configEntry := configFile.Entries[key]
 
 	if configEntry == nil {
-		configEntry = NewConfigEntry("", "", false)
+		configEntry = NewConfigEntry("", "", false, false)
 	}
 
 	return configEntry

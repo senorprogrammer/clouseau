@@ -24,9 +24,6 @@ func NewRailsConfigScanner(path *string) *RailsConfigScanner {
 		RailsPath: path,
 	}
 
-	/*
-	* Defines the base configuration file from which all others will either inherit or over-ride
-	 */
 	baseConfig := strings.Join([]string{*path, "config", "settings.yml"}, "/")
 	railsConf.ConfigPaths = append(railsConf.ConfigPaths, baseConfig)
 
@@ -56,7 +53,8 @@ func (railsConf *RailsConfigScanner) Keys() []string {
 func (railsConf *RailsConfigScanner) Load(path *string) {
 	railsConf.loadConfigPaths()
 	railsConf.parseConfigFiles()
-	railsConf.analyzeProduction()
+	railsConf.analyzeBaseConfig()
+	railsConf.analyzeProductionConfig()
 
 	fmt.Printf("Found %d files\n", railsConf.Len())
 }
@@ -68,11 +66,24 @@ func (railsConf *RailsConfigScanner) Len() int {
 /* -------------------- Private Functions -------------------- */
 
 /*
+* Base config (ie: settings.yml) is analyzed for the following:
+* - keys that are missing values
+*   We assume that the default config should not have empty values in it
+ */
+func (railsConf *RailsConfigScanner) analyzeBaseConfig() {
+	baseConfig := railsConf.configFileByName("settings.yml")
+
+	for _, configEntry := range baseConfig.Entries {
+		configEntry.BaseIsEmpty = (configEntry.Value == "")
+	}
+}
+
+/*
 * Production is analyzed for the following:
 * - if a hard-coded value equals a hard-coded value in any other file, warn about that
-*   we assume that production should either inherit intelligently, or have unique values
+*   We assume that production should either inherit intelligently, or have unique values
  */
-func (railsConf *RailsConfigScanner) analyzeProduction() {
+func (railsConf *RailsConfigScanner) analyzeProductionConfig() {
 	prodConfig := railsConf.configFileByName("production.yml")
 
 	for _, otherConfig := range railsConf.ConfigFiles {
