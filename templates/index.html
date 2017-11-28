@@ -1,49 +1,86 @@
 <html>
     <head>
         <title>ConfCheck Results</title>
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g=" crossorigin="anonymous"></script>
+        <script src="skeleton_tabs/skeleton-tabs.js"></script>
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="skeleton_tabs/skeleton-tabs.css">
         <style media="screen" type="text/css">
-            * { font-size: 12px; }
-            thead tr th { background-color: #F0F4F5; font-size: 14px; text-align: center; }
-            tfoot tr th { background-color: #F0F4F5; font-size: 14px; text-align: center; }
-            .bold { font-weight: bold; }
-            .prod_is_same { background-color: #ffccd4; }
+         * { font-size: 14px; }
+         tfoot tr th { background-color: #F0F4F5; font-size: 14px; }
+         thead tr th { background-color: #F0F4F5; font-size: 14px; }
+         .bold { font-weight: bold; }
+         .c { text-align: center; }
+         .prod_is_same { background-color: #ffccd4; }
         </style>
     </head>
     <body>
         <h1>ConfCheck Results</h1>
-        <table class="u-full-width">
-            <thead>
-                <tr>
-                <th>Keys</th>
-                {{with .RailsConfig}}
-                    {{range .ConfigFiles}}
-                        <th>{{.Name}}</th>
-                    {{end}}
-                {{end}}
+
+        <ul class="tab-nav">
+            <li>
+                <a class="button active" href="#one">RailsConfig</a>
+            </li>
+            <li>
+                <a class="button" href="#two">ENV Vars</a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="one">
+                <table class="u-full-width">
+                    <thead>
+                        <tr>
+                            <th class="c">Num of Environments</th>
+                            <th class="c">Num of Keys</th>
                         </tr>
-            </thead>
-            <tbody>
-                {{with .RailsConfig -}}
-                    {{range $idx, $key := .Keys}}
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {{with .RailsConfigScanner}}
+                            <td class="c">{{.Len}}</td>
+                            <td class="c">{{ $length := len .Keys }}{{$length}}</td>
+                            {{end}}
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table class="u-full-width">
+                    <thead>
+                        <tr>
+                            <th class="c">Keys</th>
+                            {{with .RailsConfigScanner}}
+                            {{range .ConfigFiles}}
+                            <th class="c">{{.Name}}</th>
+                            {{end}}
+                            {{end}}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{with .RailsConfigScanner -}}
+                        {{range $idx, $key := .Keys}}
                         <tr>
                             <td class="bold">{{$key}}</td>
 
-                            {{range $.RailsConfig.ConfigFiles}}
-                                {{with index .Entries $key}}<td class="{{if .EqualsOther}}prod_is_same{{end}}">{{.Value}}</td>{{end}}
+                            {{range $.RailsConfigScanner.ConfigFiles}}
+                            {{with .EntryAt $key}}<td class="{{if .EqualsOther}}prod_is_same{{end}}">{{.Value}}</td>{{end}}
                             {{end}}
                         </tr>
-                    {{- end}}
-                {{- end}}
-            </tbody>
-            <tfoot>
-                <th>Keys</th>
-                {{with .RailsConfig}}
-                    {{range .ConfigFiles}}
+                        {{- end}}
+                        {{- end}}
+                    </tbody>
+                    <tfoot>
+                        <th>Keys</th>
+                        {{with .RailsConfigScanner}}
+                        {{range .ConfigFiles}}
                         <th>{{.Name}}</th>
-                    {{end}}
-                {{end}}
-            </tfoot>
-        </table>
+                        {{end}}
+                        {{end}}
+                    </tfoot>
+                </table>
+            </div>
+            <div class="tab-pane" id="two">
+            </div>
+        </div>
     </body>
 </html>

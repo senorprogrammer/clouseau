@@ -13,14 +13,14 @@ import (
 
 /* -------------------- -------------------- */
 
-type RailsConfig struct {
+type RailsConfigScanner struct {
 	ConfigFiles []*ConfigFile
 	ConfigPaths []string
 	RailsPath   *string
 }
 
-func NewRailsConfig(path *string) *RailsConfig {
-	railsConf := RailsConfig{
+func NewRailsConfigScanner(path *string) *RailsConfigScanner {
+	railsConf := RailsConfigScanner{
 		RailsPath: path,
 	}
 
@@ -35,7 +35,7 @@ func NewRailsConfig(path *string) *RailsConfig {
 
 /* -------------------- Public Functions -------------------- */
 
-func (railsConf *RailsConfig) Keys() []string {
+func (railsConf *RailsConfigScanner) Keys() []string {
 	exists := map[string]bool{}
 	result := []string{}
 
@@ -53,7 +53,7 @@ func (railsConf *RailsConfig) Keys() []string {
 	return result
 }
 
-func (railsConf *RailsConfig) Load(path *string) {
+func (railsConf *RailsConfigScanner) Load(path *string) {
 	railsConf.loadConfigPaths()
 	railsConf.parseConfigFiles()
 	railsConf.analyzeProduction()
@@ -61,7 +61,7 @@ func (railsConf *RailsConfig) Load(path *string) {
 	fmt.Printf("Found %d files\n", railsConf.Len())
 }
 
-func (railsConf *RailsConfig) Len() int {
+func (railsConf *RailsConfigScanner) Len() int {
 	return len(railsConf.ConfigPaths)
 }
 
@@ -72,17 +72,17 @@ func (railsConf *RailsConfig) Len() int {
 * - if a hard-coded value equals a hard-coded value in any other file, warn about that
 *   we assume that production should either inherit intelligently, or have unique values
  */
-func (railsConf *RailsConfig) analyzeProduction() {
+func (railsConf *RailsConfigScanner) analyzeProduction() {
 	prodConfig := railsConf.configFileByName("production.yml")
 
-	for _, configFile := range railsConf.ConfigFiles {
-		if prodConfig == configFile {
+	for _, otherConfig := range railsConf.ConfigFiles {
+		if prodConfig == otherConfig {
 			continue
 		}
 
 		for _, key := range railsConf.Keys() {
 			prodEntry := prodConfig.Entries[key]
-			confEntry := configFile.Entries[key]
+			confEntry := otherConfig.Entries[key]
 
 			if prodEntry == nil || confEntry == nil {
 				continue
@@ -90,12 +90,13 @@ func (railsConf *RailsConfig) analyzeProduction() {
 
 			if prodEntry.Value == confEntry.Value {
 				prodConfig.Entries[key].EqualsOther = true
+				otherConfig.Entries[key].EqualsOther = true
 			}
 		}
 	}
 }
 
-func (railsConf *RailsConfig) configFileByName(name string) *ConfigFile {
+func (railsConf *RailsConfigScanner) configFileByName(name string) *ConfigFile {
 	for _, configFile := range railsConf.ConfigFiles {
 		if configFile.Name == name {
 			return configFile
@@ -104,12 +105,12 @@ func (railsConf *RailsConfig) configFileByName(name string) *ConfigFile {
 	return nil
 }
 
-func (railsConf *RailsConfig) isYamlFile(path string) bool {
+func (railsConf *RailsConfigScanner) isYamlFile(path string) bool {
 	yamlExtensions := []string{".yml", ".yaml"}
 	return contains(yamlExtensions, filepath.Ext(path))
 }
 
-func (railsConf *RailsConfig) loadConfigPaths() {
+func (railsConf *RailsConfigScanner) loadConfigPaths() {
 	configPath := strings.Join([]string{*railsConf.RailsPath, "config", "settings/"}, "/")
 
 	var lock sync.Mutex
@@ -127,7 +128,7 @@ func (railsConf *RailsConfig) loadConfigPaths() {
 }
 
 /* TODO: Parallelize this operation as well */
-func (railsConf *RailsConfig) parseConfigFiles() {
+func (railsConf *RailsConfigScanner) parseConfigFiles() {
 	for _, path := range railsConf.ConfigPaths {
 		fmt.Println(path)
 

@@ -45,6 +45,19 @@ func (configFile *ConfigFile) Append(line string) {
 	}
 }
 
+/*
+* Always returns a ConfigEntry. If none exists for a given key, returns the null case
+ */
+func (configFile *ConfigFile) EntryAt(key string) *ConfigEntry {
+	configEntry := configFile.Entries[key]
+
+	if configEntry == nil {
+		configEntry = NewConfigEntry("", "", false)
+	}
+
+	return configEntry
+}
+
 func (configFile *ConfigFile) IsEmpty() bool {
 	return configFile.Len() == 0
 }

@@ -14,11 +14,11 @@ func main() {
 
 	fmt.Println("Running conf_check...")
 
-	railsConfig := modules.NewRailsConfig(path)
+	railsConfig := modules.NewRailsConfigScanner(path)
 	railsConfig.Load(path)
 
-	// table := display.Table{}
-	// table.Render(railsConfig)
+	// display := display.NewTableData(railsConfig)
+	// display.Render()
 
 	display := display.NewHtmlData(railsConfig)
 	display.Render()
