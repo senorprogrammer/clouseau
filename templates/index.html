@@ -30,7 +30,7 @@
                             <td class="bold">{{$key}}</td>
 
                             {{range $.RailsConfig.ConfigFiles}}
-                                {{with index .Entries $key}}<td class="value">{{.Value}}</td>{{end}}
+                                {{with index .Entries $key}}<td class="{{if .EqualsOther}}prod_is_same{{end}}">{{.Value}}</td>{{end}}
                             {{end}}
                         </tr>
                     {{- end}}

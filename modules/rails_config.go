@@ -35,15 +35,6 @@ func NewRailsConfig(path *string) *RailsConfig {
 
 /* -------------------- Public Functions -------------------- */
 
-func (railsConf *RailsConfig) ConfigFileByName(name string) *ConfigFile {
-	for _, configFile := range railsConf.ConfigFiles {
-		if configFile.Name == name {
-			return configFile
-		}
-	}
-	return nil
-}
-
 func (railsConf *RailsConfig) Keys() []string {
 	exists := map[string]bool{}
 	result := []string{}
@@ -65,6 +56,7 @@ func (railsConf *RailsConfig) Keys() []string {
 func (railsConf *RailsConfig) Load(path *string) {
 	railsConf.loadConfigPaths()
 	railsConf.parseConfigFiles()
+	railsConf.analyzeProduction()
 
 	fmt.Printf("Found %d files\n", railsConf.Len())
 }
@@ -74,6 +66,43 @@ func (railsConf *RailsConfig) Len() int {
 }
 
 /* -------------------- Private Functions -------------------- */
+
+/*
+* Production is analyzed for the following:
+* - if a hard-coded value equals a hard-coded value in any other file, warn about that
+*   we assume that production should either inherit intelligently, or have unique values
+ */
+func (railsConf *RailsConfig) analyzeProduction() {
+	prodConfig := railsConf.configFileByName("production.yml")
+
+	for _, configFile := range railsConf.ConfigFiles {
+		if prodConfig == configFile {
+			continue
+		}
+
+		for _, key := range railsConf.Keys() {
+			prodEntry := prodConfig.Entries[key]
+			confEntry := configFile.Entries[key]
+
+			if prodEntry == nil || confEntry == nil {
+				continue
+			}
+
+			if prodEntry.Value == confEntry.Value {
+				prodConfig.Entries[key].EqualsOther = true
+			}
+		}
+	}
+}
+
+func (railsConf *RailsConfig) configFileByName(name string) *ConfigFile {
+	for _, configFile := range railsConf.ConfigFiles {
+		if configFile.Name == name {
+			return configFile
+		}
+	}
+	return nil
+}
 
 func (railsConf *RailsConfig) isYamlFile(path string) bool {
 	yamlExtensions := []string{".yml", ".yaml"}

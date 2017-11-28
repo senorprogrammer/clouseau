@@ -1,16 +1,16 @@
 package modules
 
 type ConfigEntry struct {
-	Key           string
-	Value         string
-	EqualsDefault bool
+	Key         string
+	Value       string
+	EqualsOther bool
 }
 
-func NewConfigEntry(key, value string, equalsDefault bool) *ConfigEntry {
+func NewConfigEntry(key, value string, equalsOther bool) *ConfigEntry {
 	configEntry := ConfigEntry{
-		Key:           key,
-		Value:         value,
-		EqualsDefault: equalsDefault,
+		Key:         key,
+		Value:       value,
+		EqualsOther: equalsOther,
 	}
 
 	return &configEntry
