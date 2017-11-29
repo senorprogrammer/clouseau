@@ -11,6 +11,20 @@ func contains(source []string, target string) bool {
 	return false
 }
 
+func removeDuplicates(source []string) []string {
+	exists := map[string]bool{}
+	result := []string{}
+
+	for v := range source {
+		if exists[source[v]] != true {
+			exists[source[v]] = true
+			result = append(result, source[v])
+		}
+	}
+
+	return result
+}
+
 func stripQuotes(source string) string {
 	quotes := []byte{'\'', '"'}
 

@@ -55,7 +55,7 @@ func (checker *EnvVarChecker) Merge(envVars *map[string][]string) {
 
 	for key, value := range *envVars {
 		key := checker.sanitizeKey(key)
-		value := checker.sanitizePaths(value)
+		value := removeDuplicates(checker.sanitizePaths(value))
 		checker.EnvVars[key] = append(checker.EnvVars[key], value...)
 	}
 }
@@ -90,6 +90,10 @@ func (checker *EnvVarChecker) sanitizeKey(key string) string {
 
 	/* Double quote to single quote */
 	key = strings.Replace(key, "\"", "'", -1)
+
+	/* Strip out the cruft */
+	key = strings.Replace(key, "ENV['", "", -1)
+	key = strings.Replace(key, "']", "", -1)
 
 	return key
 }

@@ -7,8 +7,8 @@
         <link rel="stylesheet" type="text/css" href="skeleton_tabs/skeleton-tabs.css">
         <style media="screen" type="text/css">
          * { font-size: 14px; }
-         tfoot tr th { background-color: #F0F4F5; font-size: 14px; }
-         thead tr th { background-color: #F0F4F5; font-size: 14px; }
+         tfoot tr th { background-color: #E0E0E0; font-size: 14px; }
+         thead tr th { background-color: #E0E0E0; font-size: 14px; }
 
          .base_is_empty { background-color: #80A6D9; }
          .b { font-weight: bold; }
@@ -18,36 +18,20 @@
         </style>
     </head>
     <body>
-        <h1>ConfCheck Results</h1>
-
         <ul class="tab-nav">
             <li>
-                <a class="button active" href="#one">RailsConfig</a>
+                <a class="button active" href="#one">RailsConfig Values</a>
             </li>
             <li>
-                <a class="button" href="#two">ENV Vars</a>
+                <a class="button" href="#two">RailsConfig Usage</a>
+                </li>
+            <li>
+                <a class="button" href="#three">ENV Var Usage</a>
             </li>
         </ul>
 
         <div class="tab-content">
             <div class="tab-pane active" id="one">
-                <table class="u-full-width">
-                    <thead>
-                        <tr>
-                            <th class="c">Num of Environments</th>
-                            <th class="c">Num of Keys</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            {{with .RailsConfigChecker}}
-                            <td class="c">{{.Len}}</td>
-                            <td class="c">{{ $length := len .Keys }}{{$length}}</td>
-                            {{end}}
-                        </tr>
-                    </tbody>
-                </table>
-
                 <table class="u-full-width">
                     <thead>
                         <tr>
@@ -83,6 +67,9 @@
             </div>
 
             <div class="tab-pane" id="two">
+            </div>
+
+            <div class="tab-pane" id="three">
                 <table class="u-full-width">
                     <thead>
                         <tr>
