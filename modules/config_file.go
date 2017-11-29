@@ -27,9 +27,6 @@ func NewConfigFile(path *string) *ConfigFile {
 }
 
 func (configFile *ConfigFile) Append(line string) {
-	/*
-	* If there's an empty line, or a commented-out line, don't try to parse that line
-	 */
 	if (len(line) == 0) || (string(line[0]) == "#") {
 		return
 	}

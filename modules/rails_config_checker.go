@@ -13,54 +13,54 @@ import (
 
 /* -------------------- -------------------- */
 
-type RailsConfigScanner struct {
+type RailsConfigChecker struct {
 	ConfigFiles []*ConfigFile
 	ConfigPaths []string
 	RailsPath   *string
 }
 
-func NewRailsConfigScanner(path *string) *RailsConfigScanner {
-	railsConf := RailsConfigScanner{
+func NewRailsConfigChecker(path *string) *RailsConfigChecker {
+	checker := RailsConfigChecker{
 		RailsPath: path,
 	}
 
 	baseConfig := strings.Join([]string{*path, "config", "settings.yml"}, "/")
-	railsConf.ConfigPaths = append(railsConf.ConfigPaths, baseConfig)
+	checker.ConfigPaths = append(checker.ConfigPaths, baseConfig)
 
-	return &railsConf
+	return &checker
 }
 
 /* -------------------- Public Functions -------------------- */
 
-func (railsConf *RailsConfigScanner) Keys() []string {
+func (railsConf *RailsConfigChecker) Keys() []string {
 	exists := map[string]bool{}
-	result := []string{}
+	keys := []string{}
 
 	for _, configFile := range railsConf.ConfigFiles {
 		for key, _ := range configFile.Entries {
 			if exists[key] != true {
 				exists[key] = true
-				result = append(result, key)
+				keys = append(keys, key)
 			}
 		}
 	}
 
-	sort.Strings(result)
+	sort.Strings(keys)
 
-	return result
+	return keys
 }
 
-func (railsConf *RailsConfigScanner) Load(path *string) {
-	railsConf.loadConfigPaths()
-	railsConf.parseConfigFiles()
-	railsConf.analyzeBaseConfig()
-	railsConf.analyzeProductionConfig()
+func (checker *RailsConfigChecker) Load() {
+	checker.loadConfigPaths()
+	checker.parseConfigFiles()
+	checker.analyzeBaseConfig()
+	checker.analyzeProductionConfig()
 
-	fmt.Printf("Found %d files\n", railsConf.Len())
+	fmt.Printf("Found %d files\n", checker.Len())
 }
 
-func (railsConf *RailsConfigScanner) Len() int {
-	return len(railsConf.ConfigPaths)
+func (checker *RailsConfigChecker) Len() int {
+	return len(checker.ConfigPaths)
 }
 
 /* -------------------- Private Functions -------------------- */
@@ -70,8 +70,8 @@ func (railsConf *RailsConfigScanner) Len() int {
 * - keys that are missing values
 *   We assume that the default config should not have empty values in it
  */
-func (railsConf *RailsConfigScanner) analyzeBaseConfig() {
-	baseConfig := railsConf.configFileByName("settings.yml")
+func (checker *RailsConfigChecker) analyzeBaseConfig() {
+	baseConfig := checker.configFileByName("settings.yml")
 
 	for _, configEntry := range baseConfig.Entries {
 		configEntry.BaseIsEmpty = (configEntry.Value == "")
@@ -83,15 +83,15 @@ func (railsConf *RailsConfigScanner) analyzeBaseConfig() {
 * - if a hard-coded value equals a hard-coded value in any other file, warn about that
 *   We assume that production should either inherit intelligently, or have unique values
  */
-func (railsConf *RailsConfigScanner) analyzeProductionConfig() {
-	prodConfig := railsConf.configFileByName("production.yml")
+func (checker *RailsConfigChecker) analyzeProductionConfig() {
+	prodConfig := checker.configFileByName("production.yml")
 
-	for _, otherConfig := range railsConf.ConfigFiles {
+	for _, otherConfig := range checker.ConfigFiles {
 		if prodConfig == otherConfig {
 			continue
 		}
 
-		for _, key := range railsConf.Keys() {
+		for _, key := range checker.Keys() {
 			prodEntry := prodConfig.Entries[key]
 			confEntry := otherConfig.Entries[key]
 
@@ -107,8 +107,8 @@ func (railsConf *RailsConfigScanner) analyzeProductionConfig() {
 	}
 }
 
-func (railsConf *RailsConfigScanner) configFileByName(name string) *ConfigFile {
-	for _, configFile := range railsConf.ConfigFiles {
+func (checker *RailsConfigChecker) configFileByName(name string) *ConfigFile {
+	for _, configFile := range checker.ConfigFiles {
 		if configFile.Name == name {
 			return configFile
 		}
@@ -116,22 +116,22 @@ func (railsConf *RailsConfigScanner) configFileByName(name string) *ConfigFile {
 	return nil
 }
 
-func (railsConf *RailsConfigScanner) isYamlFile(path string) bool {
+func (checker *RailsConfigChecker) isYamlFile(path string) bool {
 	yamlExtensions := []string{".yml", ".yaml"}
 	return contains(yamlExtensions, filepath.Ext(path))
 }
 
-func (railsConf *RailsConfigScanner) loadConfigPaths() {
-	configPath := strings.Join([]string{*railsConf.RailsPath, "config", "settings/"}, "/")
+func (checker *RailsConfigChecker) loadConfigPaths() {
+	configPath := strings.Join([]string{*checker.RailsPath, "config", "settings/"}, "/")
 
 	var lock sync.Mutex
 
 	powerwalk.Walk(configPath, func(path string, f os.FileInfo, err error) error {
-		if railsConf.isYamlFile(path) {
+		if checker.isYamlFile(path) {
 			lock.Lock()
 			defer lock.Unlock()
 
-			railsConf.ConfigPaths = append(railsConf.ConfigPaths, path)
+			checker.ConfigPaths = append(checker.ConfigPaths, path)
 		}
 
 		return nil
@@ -139,13 +139,13 @@ func (railsConf *RailsConfigScanner) loadConfigPaths() {
 }
 
 /* TODO: Parallelize this operation as well */
-func (railsConf *RailsConfigScanner) parseConfigFiles() {
-	for _, path := range railsConf.ConfigPaths {
+func (checker *RailsConfigChecker) parseConfigFiles() {
+	for _, path := range checker.ConfigPaths {
 		fmt.Println(path)
 
 		configFile := NewConfigFile(&path)
 		if configFile.IsEmpty() == false {
-			railsConf.ConfigFiles = append(railsConf.ConfigFiles, configFile)
+			checker.ConfigFiles = append(checker.ConfigFiles, configFile)
 		}
 	}
 }

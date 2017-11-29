@@ -14,13 +14,16 @@ func main() {
 
 	fmt.Println("Running conf_check...")
 
-	railsConfig := modules.NewRailsConfigScanner(path)
-	railsConfig.Load(path)
+	/* RailsConfig checking */
+	railsConfChecker := modules.NewRailsConfigChecker(path)
+	railsConfChecker.Load()
 
-	// display := display.NewTableData(railsConfig)
-	// display.Render()
+	/* Environment variable checking */
+	envVarChecker := modules.NewEnvVarChecker(path)
+	envVarChecker.Load()
 
-	display := display.NewHtmlData(railsConfig)
+	/* HTML rendering */
+	display := display.NewHtmlData(envVarChecker, railsConfChecker)
 	display.Render()
 	display.Show()
 }

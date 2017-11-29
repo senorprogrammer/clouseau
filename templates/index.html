@@ -11,9 +11,10 @@
          thead tr th { background-color: #F0F4F5; font-size: 14px; }
 
          .base_is_empty { background-color: #80A6D9; }
-         .bold { font-weight: bold; }
+         .b { font-weight: bold; }
          .c { text-align: center; }
          .prod_has_same { background-color: #fE5978; }
+         .t { vertical-align: top; }
         </style>
     </head>
     <body>
@@ -39,7 +40,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            {{with .RailsConfigScanner}}
+                            {{with .RailsConfigChecker}}
                             <td class="c">{{.Len}}</td>
                             <td class="c">{{ $length := len .Keys }}{{$length}}</td>
                             {{end}}
@@ -51,7 +52,7 @@
                     <thead>
                         <tr>
                             <th class="c">Keys</th>
-                            {{with .RailsConfigScanner}}
+                            {{with .RailsConfigChecker}}
                             {{range .ConfigFiles}}
                             <th class="c">{{.Name}}</th>
                             {{end}}
@@ -59,21 +60,20 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {{with .RailsConfigScanner -}}
+                        {{with .RailsConfigChecker}}
                         {{range $idx, $key := .Keys}}
                         <tr>
-                            <td class="bold">{{$key}}</td>
-
-                            {{range $.RailsConfigScanner.ConfigFiles}}
+                            <td class="b">{{$key}}</td>
+                            {{range $.RailsConfigChecker.ConfigFiles}}
                             {{with .EntryAt $key}}<td class="{{if .BaseIsEmpty}}base_is_empty{{end}}{{if .EqualsOther}}prod_has_same{{end}}">{{.Value}}</td>{{end}}
                             {{end}}
                         </tr>
-                        {{- end}}
-                        {{- end}}
+                        {{end}}
+                        {{end}}
                     </tbody>
                     <tfoot>
                         <th>Keys</th>
-                        {{with .RailsConfigScanner}}
+                        {{with .RailsConfigChecker}}
                         {{range .ConfigFiles}}
                         <th>{{.Name}}</th>
                         {{end}}
@@ -81,7 +81,30 @@
                     </tfoot>
                 </table>
             </div>
+
             <div class="tab-pane" id="two">
+                <table class="u-full-width">
+                    <thead>
+                        <tr>
+                            <th class="c">Environment Variable</th>
+                            <th class="c">Files</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{with .EnvVarChecker}}
+                        {{range $key, $paths := .EnvVars}}
+                        <tr>
+                            <td class="b t">{{$key}}</td>
+                            <td>
+                            {{range $path := $paths}}
+                                <div>{{$path}}</div>
+                            {{end}}
+                            </td>
+                        </tr>
+                        {{end}}
+                        {{end}}
+                    </tbody>
+                </table>
             </div>
         </div>
     </body>
