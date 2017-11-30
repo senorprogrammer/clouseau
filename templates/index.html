@@ -20,13 +20,28 @@
     <body>
         <ul class="tab-nav">
             <li>
-                <a class="button active" href="#one">RailsConfig Values</a>
+                <a class="button active" href="#one">
+                    RailsConfig Values
+                    {{with .RailsConfigChecker}}
+                    ({{.Len}})
+                    {{end}}
+                </a>
             </li>
             <li>
-                <a class="button" href="#two">RailsConfig Usage</a>
+                <a class="button" href="#two">
+                    RailsConfig Usage
+                    {{with .ConfigChecker}}
+                    ({{.Len}})
+                    {{end}}
+                </a>
                 </li>
             <li>
-                <a class="button" href="#three">ENV Var Usage</a>
+                <a class="button" href="#three">
+                    ENV Var Usage
+                    {{with .EnvVarChecker}}
+                    ({{.Len}})
+                    {{end}}
+                </a>
             </li>
         </ul>
 
@@ -67,6 +82,28 @@
             </div>
 
             <div class="tab-pane" id="two">
+                <table class="u-full-width">
+                    <thead>
+                        <tr>
+                            <th class="c">Config Values</th>
+                            <th class="c">Files</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{with .ConfigChecker}}
+                        {{range $key, $paths := .Results}}
+                        <tr>
+                            <td class="b t">{{$key}}</td>
+                            <td>
+                            {{range $path := $paths}}
+                                <div>{{$path}}</div>
+                            {{end}}
+                            </td>
+                        </tr>
+                        {{end}}
+                        {{end}}
+                    </tbody>
+                </table>
             </div>
 
             <div class="tab-pane" id="three">
@@ -79,7 +116,7 @@
                     </thead>
                     <tbody>
                         {{with .EnvVarChecker}}
-                        {{range $key, $paths := .EnvVars}}
+                        {{range $key, $paths := .Results}}
                         <tr>
                             <td class="b t">{{$key}}</td>
                             <td>

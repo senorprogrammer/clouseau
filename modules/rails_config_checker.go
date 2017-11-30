@@ -50,17 +50,17 @@ func (railsConf *RailsConfigChecker) Keys() []string {
 	return keys
 }
 
-func (checker *RailsConfigChecker) Load() {
+func (checker *RailsConfigChecker) Run() {
 	checker.loadConfigPaths()
 	checker.parseConfigFiles()
 	checker.analyzeBaseConfig()
 	checker.analyzeProductionConfig()
 
-	fmt.Printf("Found %d files\n", checker.Len())
+	fmt.Printf("Found %d keys\n", checker.Len())
 }
 
 func (checker *RailsConfigChecker) Len() int {
-	return len(checker.ConfigPaths)
+	return len(checker.Keys())
 }
 
 /* -------------------- Private Functions -------------------- */
@@ -141,8 +141,6 @@ func (checker *RailsConfigChecker) loadConfigPaths() {
 /* TODO: Parallelize this operation as well */
 func (checker *RailsConfigChecker) parseConfigFiles() {
 	for _, path := range checker.ConfigPaths {
-		fmt.Println(path)
-
 		configFile := NewConfigFile(&path)
 		if configFile.IsEmpty() == false {
 			checker.ConfigFiles = append(checker.ConfigFiles, configFile)

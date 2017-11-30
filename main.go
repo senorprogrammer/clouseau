@@ -16,14 +16,18 @@ func main() {
 
 	/* RailsConfig checking */
 	railsConfChecker := modules.NewRailsConfigChecker(path)
-	railsConfChecker.Load()
+	railsConfChecker.Run()
+
+	/* Config checking */
+	configChecker := modules.NewConfigChecker(*path, `AppConfig\.?[A-Za-z_]+`)
+	configChecker.Run()
 
 	/* Environment variable checking */
-	envVarChecker := modules.NewEnvVarChecker(path)
-	envVarChecker.Load()
+	envVarChecker := modules.NewConfigChecker(*path, `ENV\[(.*?)\]`)
+	envVarChecker.Run()
 
 	/* HTML rendering */
-	display := display.NewHtmlData(envVarChecker, railsConfChecker)
+	display := display.NewHtmlData(envVarChecker, configChecker, railsConfChecker)
 	display.Render()
 	display.Show()
 }

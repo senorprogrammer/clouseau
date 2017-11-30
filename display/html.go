@@ -11,13 +11,15 @@ import (
 type HtmlData struct {
 	Keys               []string
 	OutputPath         string
-	EnvVarChecker      *modules.EnvVarChecker
+	EnvVarChecker      *modules.ConfigChecker
+	ConfigChecker      *modules.ConfigChecker
 	RailsConfigChecker *modules.RailsConfigChecker
 }
 
-func NewHtmlData(envVarChecker *modules.EnvVarChecker, railsConfChecker *modules.RailsConfigChecker) *HtmlData {
+func NewHtmlData(envVarChecker *modules.ConfigChecker, configChecker *modules.ConfigChecker, railsConfChecker *modules.RailsConfigChecker) *HtmlData {
 	data := HtmlData{
 		EnvVarChecker:      envVarChecker,
+		ConfigChecker:      configChecker,
 		RailsConfigChecker: railsConfChecker,
 		OutputPath:         "./output/index.html",
 	}
