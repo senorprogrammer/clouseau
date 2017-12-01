@@ -14,6 +14,7 @@
          .b { font-weight: bold; }
          .c { text-align: center; }
          .prod_has_same { background-color: #fE5978; }
+         .sidebar { background-color: #E0E0E0; padding-left: 14px !important; }
          .t { vertical-align: top; }
         </style>
     </head>
@@ -29,16 +30,24 @@
             </li>
             <li>
                 <a class="button" href="#two">
-                    RailsConfig Usage
                     {{with .ConfigChecker}}
+                    {{.Name}} Usage
                     ({{.Len}})
                     {{end}}
                 </a>
-                </li>
+            </li>
             <li>
                 <a class="button" href="#three">
-                    ENV Var Usage
+                    {{with .FigaroChecker}}
+                    {{.Name}} Usage
+                    ({{.Len}})
+                    {{end}}
+                </a>
+            </li>
+            <li>
+                <a class="button" href="#four">
                     {{with .EnvVarChecker}}
+                    {{.Name}} Usage
                     ({{.Len}})
                     {{end}}
                 </a>
@@ -62,7 +71,7 @@
                         {{with .RailsConfigChecker}}
                         {{range $idx, $key := .Keys}}
                         <tr>
-                            <td class="b">{{$key}}</td>
+                            <td class="sidebar b">{{$key}}</td>
                             {{range $.RailsConfigChecker.ConfigFiles}}
                             {{with .EntryAt $key}}<td class="{{if .BaseIsEmpty}}base_is_empty{{end}}{{if .EqualsOther}}prod_has_same{{end}}">{{.Value}}</td>{{end}}
                             {{end}}
@@ -71,10 +80,10 @@
                         {{end}}
                     </tbody>
                     <tfoot>
-                        <th>Keys</th>
+                        <th class="c">Keys</th>
                         {{with .RailsConfigChecker}}
                         {{range .ConfigFiles}}
-                        <th>{{.Name}}</th>
+                        <th class="c">{{.Name}}</th>
                         {{end}}
                         {{end}}
                     </tfoot>
@@ -107,6 +116,31 @@
             </div>
 
             <div class="tab-pane" id="three">
+                <table class="u-full-width">
+                    <thead>
+                        <tr>
+                            <th class="c">Figaro Values</th>
+                            <th class="c">Files</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{with .FigaroChecker}}
+                        {{range $key, $paths := .Results}}
+                        <tr>
+                            <td class="b t">{{$key}}</td>
+                            <td>
+                            {{range $path := $paths}}
+                                <div>{{$path}}</div>
+                            {{end}}
+                            </td>
+                        </tr>
+                        {{end}}
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="tab-pane" id="four">
                 <table class="u-full-width">
                     <thead>
                         <tr>

@@ -19,15 +19,19 @@ func main() {
 	railsConfChecker.Run()
 
 	/* Config checking */
-	configChecker := modules.NewConfigChecker(*path, `AppConfig\.?[A-Za-z_]+`)
+	configChecker := modules.NewConfigChecker("Config", *path, `AppConfig\.?[A-Za-z_]+`)
 	configChecker.Run()
 
+	/* Figaro checking */
+	figaroChecker := modules.NewConfigChecker("Figaro", *path, `Figaro\.env?[A-Za-z._]+`)
+	figaroChecker.Run()
+
 	/* Environment variable checking */
-	envVarChecker := modules.NewConfigChecker(*path, `ENV\[(.*?)\]`)
+	envVarChecker := modules.NewConfigChecker("ENV Vars", *path, `ENV\[(.*?)\]`)
 	envVarChecker.Run()
 
 	/* HTML rendering */
-	display := display.NewHtmlData(envVarChecker, configChecker, railsConfChecker)
+	display := display.NewHtmlData(envVarChecker, configChecker, figaroChecker, railsConfChecker)
 	display.Render()
 	display.Show()
 }

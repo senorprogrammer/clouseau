@@ -12,13 +12,15 @@ import (
 )
 
 type ConfigChecker struct {
+	Name      string
 	Results   map[string][]string
 	Path      string
 	SearchStr string
 }
 
-func NewConfigChecker(path string, searchStr string) *ConfigChecker {
+func NewConfigChecker(name, path, searchStr string) *ConfigChecker {
 	checker := ConfigChecker{
+		Name:      name,
 		Results:   make(map[string][]string),
 		Path:      path,
 		SearchStr: searchStr,
@@ -57,7 +59,7 @@ func (checker *ConfigChecker) Run() {
 		return nil
 	})
 
-	fmt.Printf("Found %d config entries\n", checker.Len())
+	fmt.Printf("Found %d %s entries\n", checker.Len(), checker.Name)
 }
 
 /* -------------------- Private Functions -------------------- */
@@ -105,6 +107,7 @@ func (checker *ConfigChecker) sanitize(key string) string {
 	key = strings.Replace(key, "AppConfig.", "", -1)
 	key = strings.Replace(key, "ENV['", "", -1)
 	key = strings.Replace(key, "']", "", -1)
+	key = strings.Replace(key, "Figaro.", "", -1)
 
 	return key
 }
@@ -112,9 +115,6 @@ func (checker *ConfigChecker) sanitize(key string) string {
 func (checker *ConfigChecker) sanitizePaths(paths []string) []string {
 	result := []string{}
 
-	/*
-	* Remove the Rails path from the absolute file paths to make them shorter for display
-	 */
 	for _, path := range paths {
 		result = append(result, strings.Replace(path, checker.Path, "", -1))
 	}
