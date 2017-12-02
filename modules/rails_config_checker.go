@@ -71,7 +71,7 @@ func (checker *RailsConfigChecker) Len() int {
 *   We assume that the default config should not have empty values in it
  */
 func (checker *RailsConfigChecker) analyzeBaseConfig() {
-	baseConfig := checker.configFileByName("settings.yml")
+	baseConfig := checker.baseConfig()
 
 	for _, configEntry := range baseConfig.Entries {
 		configEntry.BaseIsEmpty = (configEntry.Value == "")
@@ -107,6 +107,10 @@ func (checker *RailsConfigChecker) analyzeProductionConfig() {
 	}
 }
 
+func (checker *RailsConfigChecker) baseConfig() *ConfigFile {
+	return checker.configFileByName("settings.yml")
+}
+
 func (checker *RailsConfigChecker) configFileByName(name string) *ConfigFile {
 	for _, configFile := range checker.ConfigFiles {
 		if configFile.Name == name {
@@ -138,10 +142,10 @@ func (checker *RailsConfigChecker) loadConfigPaths() {
 	})
 }
 
-/* TODO: Parallelize this operation as well */
 func (checker *RailsConfigChecker) parseConfigFiles() {
 	for _, path := range checker.ConfigPaths {
-		configFile := NewConfigFile(&path)
+		configFile := NewConfigFile(&path, checker.baseConfig())
+
 		if configFile.IsEmpty() == false {
 			checker.ConfigFiles = append(checker.ConfigFiles, configFile)
 		}

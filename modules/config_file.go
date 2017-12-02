@@ -11,13 +11,15 @@ import (
 type ConfigFile struct {
 	Entries map[string]*ConfigEntry
 	Name    string
+	Parent  *ConfigFile
 	Path    *string
 }
 
-func NewConfigFile(path *string) *ConfigFile {
+func NewConfigFile(path *string, parent *ConfigFile) *ConfigFile {
 	configFile := ConfigFile{
 		Entries: make(map[string]*ConfigEntry),
 		Name:    filepath.Base(*path),
+		Parent:  parent,
 		Path:    path,
 	}
 
@@ -25,6 +27,8 @@ func NewConfigFile(path *string) *ConfigFile {
 
 	return &configFile
 }
+
+/* -------------------- Public Functions -------------------- */
 
 func (configFile *ConfigFile) Append(line string) {
 	if (len(line) == 0) || (string(line[0]) == "#") {
@@ -37,19 +41,23 @@ func (configFile *ConfigFile) Append(line string) {
 		key := stripQuotes(strings.TrimSpace(parts[0]))
 		value := stripQuotes(strings.TrimSpace(parts[1]))
 
-		configEntry := NewConfigEntry(key, value, false, false)
+		configEntry := NewConfigEntry(false, key, value, false, false)
 		configFile.Entries[key] = configEntry
 	}
 }
 
-/*
-* Always returns a ConfigEntry. If none exists for a given key, returns the null case
- */
 func (configFile *ConfigFile) EntryAt(key string) *ConfigEntry {
 	configEntry := configFile.Entries[key]
 
 	if configEntry == nil {
-		configEntry = NewConfigEntry("", "", false, false)
+		if configFile.Parent != nil && configFile != configFile.Parent {
+			/* Ask the parent for the value */
+			configEntry = configFile.Parent.EntryAt(key)
+			configEntry.Derived = true
+		} else {
+			/* Else return the nil value */
+			configEntry = NewConfigEntry(false, "", "", false, false)
+		}
 	}
 
 	return configEntry

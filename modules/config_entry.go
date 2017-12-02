@@ -1,8 +1,9 @@
 package modules
 
 type ConfigEntry struct {
-	Key   string
-	Value string
+	Derived bool
+	Key     string
+	Value   string
 
 	/*
 	* Display flags
@@ -12,8 +13,9 @@ type ConfigEntry struct {
 	EqualsOther bool
 }
 
-func NewConfigEntry(key, value string, baseIsEmpty, equalsOther bool) *ConfigEntry {
+func NewConfigEntry(derived bool, key, value string, baseIsEmpty, equalsOther bool) *ConfigEntry {
 	configEntry := ConfigEntry{
+		Derived:     derived,
 		Key:         key,
 		Value:       value,
 		BaseIsEmpty: baseIsEmpty,
