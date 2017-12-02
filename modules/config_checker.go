@@ -1,10 +1,6 @@
 package modules
 
 import (
-	"bufio"
-	"fmt"
-	"github.com/stretchr/powerwalk"
-	"os"
 	"regexp"
 	"sort"
 	"strings"
@@ -12,18 +8,21 @@ import (
 )
 
 type ConfigChecker struct {
-	Name      string
-	Results   map[string][]string
-	Path      string
-	SearchStr string
+	name    string
+	Results map[string][]string
+	Path    string
+
+	sync.Mutex
+	regex *regexp.Regexp
 }
 
 func NewConfigChecker(name, path, searchStr string) *ConfigChecker {
 	checker := ConfigChecker{
-		Name:      name,
-		Results:   make(map[string][]string),
-		Path:      path,
-		SearchStr: searchStr,
+		name:    name,
+		Results: make(map[string][]string),
+		Path:    path,
+
+		regex: regexp.MustCompile(searchStr),
 	}
 
 	return &checker
@@ -46,57 +45,49 @@ func (checker *ConfigChecker) Len() int {
 	return len(checker.Results)
 }
 
-func (checker *ConfigChecker) Run() {
-	var lock sync.Mutex
+func (checker *ConfigChecker) Name() string {
+	return checker.name
+}
 
-	powerwalk.Walk(checker.Path, func(path string, info os.FileInfo, err error) error {
-		lock.Lock()
-		defer lock.Unlock()
+func (checker *ConfigChecker) Parse(line string, fileName string) {
+	results := make(map[string][]string)
 
-		results := checker.find(path)
-		checker.merge(results)
+	for _, match := range checker.regex.FindAllString(line, -1) {
+		results[match] = append(results[match], fileName)
+	}
 
-		return nil
-	})
+	checker.merge(results)
+}
 
-	fmt.Printf("Found %d %s entries\n", checker.Len(), checker.Name)
+func (checker *ConfigChecker) Sanitize() {
+	results := make(map[string][]string)
+
+	for key, value := range checker.Results {
+		key := checker.sanitizeKey(key)
+		value := checker.sanitizePaths(value)
+		value = removeDuplicates(value)
+		results[key] = append(checker.Results[key], value...)
+	}
+
+	checker.Results = results
 }
 
 /* -------------------- Private Functions -------------------- */
 
-func (checker *ConfigChecker) find(path string) *map[string][]string {
-	results := make(map[string][]string)
-	reg := regexp.MustCompile(checker.SearchStr)
-
-	file, _ := os.Open(path)
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		matches := reg.FindAllString(scanner.Text(), -1)
-
-		for _, match := range matches {
-			results[match] = append(results[match], path)
-		}
-	}
-
-	return &results
-}
-
-func (checker *ConfigChecker) merge(results *map[string][]string) {
-	if len(*results) == 0 {
+func (checker *ConfigChecker) merge(results map[string][]string) {
+	if len(results) == 0 {
 		return
 	}
 
-	for key, value := range *results {
-		key := checker.sanitize(key)
-		value := checker.sanitizePaths(value)
-		value = removeDuplicates(value)
+	checker.Lock()
+	defer checker.Unlock()
+
+	for key, value := range results {
 		checker.Results[key] = append(checker.Results[key], value...)
 	}
 }
 
-func (checker *ConfigChecker) sanitize(key string) string {
+func (checker *ConfigChecker) sanitizeKey(key string) string {
 	/* HTML-escaped single quote to single quote */
 	key = strings.Replace(key, "&#39;", "'", -1)
 
