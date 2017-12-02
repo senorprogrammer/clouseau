@@ -8,18 +8,17 @@ import (
 )
 
 type Checkbox struct {
-	FileChecks       []Checkable
-	Path             string
-	RailsConfigCheck *RailsConfigChecker
+	FileChecks []Checkable
+	Path       string
 }
+
+/* -------------------- Public Functions -------------------- */
 
 func (checkbox *Checkbox) Append(checkable Checkable) {
 	checkbox.FileChecks = append(checkbox.FileChecks, checkable)
 }
 
 func (checkbox *Checkbox) Run() {
-	checkbox.RailsConfigCheck.Run()
-
 	powerwalk.Walk(checkbox.Path, func(path string, info os.FileInfo, err error) error {
 		file, _ := os.Open(path)
 		defer file.Close()

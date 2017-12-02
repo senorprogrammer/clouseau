@@ -16,15 +16,15 @@ import (
 type RailsConfigChecker struct {
 	ConfigFiles []*ConfigFile
 	ConfigPaths []string
-	RailsPath   *string
+	RailsPath   string
 }
 
-func NewRailsConfigChecker(path *string) *RailsConfigChecker {
+func NewRailsConfigChecker(path string) *RailsConfigChecker {
 	checker := RailsConfigChecker{
 		RailsPath: path,
 	}
 
-	baseConfig := strings.Join([]string{*path, "config", "settings.yml"}, "/")
+	baseConfig := strings.Join([]string{path, "config", "settings.yml"}, "/")
 	checker.ConfigPaths = append(checker.ConfigPaths, baseConfig)
 
 	return &checker
@@ -122,7 +122,7 @@ func (checker *RailsConfigChecker) isYamlFile(path string) bool {
 }
 
 func (checker *RailsConfigChecker) loadConfigPaths() {
-	configPath := strings.Join([]string{*checker.RailsPath, "config", "settings/"}, "/")
+	configPath := strings.Join([]string{checker.RailsPath, "config", "settings/"}, "/")
 
 	var lock sync.Mutex
 

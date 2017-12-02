@@ -16,12 +16,14 @@ func main() {
 
 	fmt.Println("Running conf_check...")
 
-	railsConfChecker := modules.NewRailsConfigChecker(path)
+	railsConfChecker := modules.NewRailsConfigChecker(*path)
+	railsConfChecker.Run()
+
 	configChecker := modules.NewConfigChecker("Config", *path, `AppConfig\.?[A-Za-z_]+`)
 	envVarChecker := modules.NewConfigChecker("ENV Vars", *path, `ENV\[(.*?)\]`)
 	figaroChecker := modules.NewConfigChecker("Figaro", *path, `Figaro\.env?[A-Za-z._]+`)
 
-	checkbox := modules.Checkbox{Path: *path, RailsConfigCheck: railsConfChecker}
+	checkbox := modules.Checkbox{Path: *path}
 	checkbox.Append(configChecker)
 	checkbox.Append(figaroChecker)
 	checkbox.Append(envVarChecker)
