@@ -12,6 +12,8 @@ A configuration inspector/checker for Ruby on Rails.
 
 Clouseau will analyze your Rails app and provide information about the following configuration uses.
 
+<img src="./images/clouseau_ui.png" alt="clouseau ui example" />
+
 ## Config gem
 https://github.com/railsconfig/config
 
