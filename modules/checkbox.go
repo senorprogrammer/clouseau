@@ -1,7 +1,7 @@
 package modules
 
 import (
-	"bufio"
+	"io/ioutil"
 	"os"
 
 	"github.com/stretchr/powerwalk"
@@ -23,10 +23,10 @@ func (checkbox *Checkbox) Run() {
 		file, _ := os.Open(path)
 		defer file.Close()
 
-		scanner := bufio.NewScanner(file)
-		for scanner.Scan() {
+		data, err := ioutil.ReadAll(file)
+		if err == nil {
 			for _, checkable := range checkbox.FileChecks {
-				checkable.Parse(scanner.Text(), file.Name())
+				checkable.Parse(string(data), file.Name())
 			}
 		}
 		return nil

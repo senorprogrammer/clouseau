@@ -6,6 +6,6 @@ type Checkable interface {
 	Keys() []string
 	Len() int
 	Name() string
-	Parse(line string, fileName string)
+	Parse(data string, fileName string)
 	Sanitize()
 }

@@ -1,7 +1,7 @@
 install:
-	go clean
-	go install
+	packr clean
+	packr install
 
 clean:
-	go clean
+	packr clean
 	rm -f clouseau

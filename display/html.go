@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/gobuffalo/packr"
 	"github.com/senorprogrammer/clouseau/modules"
 )
 
@@ -23,14 +24,15 @@ func NewHtmlData(envVarChecker, configChecker, figaroChecker *modules.ConfigChec
 		ConfigChecker:      configChecker,
 		FigaroChecker:      figaroChecker,
 		RailsConfigChecker: railsConfChecker,
-		OutputPath:         "./output/index.html",
+		OutputPath:         "./clouseau.html",
 	}
 
 	return &data
 }
 
 func (data *HtmlData) Render() {
-	tmpl, err := template.ParseFiles("./templates/index.html")
+	box := packr.NewBox("../templates")
+	tmpl, err := template.New("index").Parse(box.String("index.html"))
 	if err != nil {
 		panic(err)
 	}

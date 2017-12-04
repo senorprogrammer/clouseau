@@ -49,10 +49,10 @@ func (checker *ConfigChecker) Name() string {
 	return checker.name
 }
 
-func (checker *ConfigChecker) Parse(line string, fileName string) {
+func (checker *ConfigChecker) Parse(data string, fileName string) {
 	results := make(map[string][]string)
 
-	for _, match := range checker.regex.FindAllString(line, -1) {
+	for _, match := range checker.regex.FindAllString(data, -1) {
 		results[match] = append(results[match], fileName)
 	}
 
