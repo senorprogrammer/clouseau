@@ -9,8 +9,8 @@ type ConfigEntry struct {
 	* Display flags
 	* TODO: Fix this, this approach is unscalable and inflexible
 	 */
-	BaseIsEmpty bool
-	EqualsOther bool
+	BaseIsEmpty bool // Is the config entry empty in the base configuration (ie settings.yml)?
+	EqualsOther bool // Does this config entry value equal the same value in another config file?
 }
 
 func NewConfigEntry(derived bool, key, value string, baseIsEmpty, equalsOther bool) *ConfigEntry {
