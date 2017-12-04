@@ -14,7 +14,7 @@ Clouseau will analyze your Rails app and provide information about the following
 
 <img src="./images/clouseau_ui.png" alt="clouseau ui example" />
 
-## Config gem
+### Config gem
 https://github.com/railsconfig/config
 
 * Analyze config's `settings.yml` files to show you all the configured variables and values
@@ -23,11 +23,40 @@ https://github.com/railsconfig/config
 * Indicate which values are derived from other configuration files, and what those derived values will be
 * Indicate where in your Rails app all the Config config values are used
 
-## Figaro gem
+### Figaro gem
 https://github.com/laserlemon/figaro
 
 * Indicate where in your Rails app all the Figaro config values are used
 
-## Environment Variables
+### Environment Variables
 
 * Indicate where in your Rails app all the environment variables are used
+
+## Installation
+
+1. Clone this repository
+2. `cd` into the resulting `clouseau` directory
+3. Run `make install`
+4. Run `which clouseau` to verify the install was successful
+
+## Usage
+
+### Source repository
+
+`go run clouseau.go --dir=path-to-your-rails-app`
+
+### Compiled binary
+
+`clouseau --dir=path-to-your-rails-app`
+
+If you're currently in your Rails directory, you can just run `clouseau` directly.
+
+## Output
+
+Clouseau generates a static HTML report about your configuration values and their use. After it has run, it will automatically open the resulting HTML page. This file can be found in `output/index.html`.
+
+## Development
+
+**WARNING:** This app has so far only been used on MacOS. No guarantees are provided.
+
+Pull requests, bug reports, feature requests all welcome. If you're a Ruby/Rails dev and there's something you want added to this, don't let the fact that Clouseau is written in Go stop you. Dive in, hack away. Ping me, I'm happy to help.

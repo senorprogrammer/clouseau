@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/senorprogrammer/conf_check/modules"
+	"github.com/senorprogrammer/clouseau/modules"
 )
 
 type HtmlData struct {

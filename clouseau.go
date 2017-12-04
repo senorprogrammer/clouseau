@@ -4,8 +4,8 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/senorprogrammer/conf_check/display"
-	"github.com/senorprogrammer/conf_check/modules"
+	"github.com/senorprogrammer/clouseau/display"
+	"github.com/senorprogrammer/clouseau/modules"
 )
 
 /* -------------------- Main -------------------- */
@@ -14,7 +14,7 @@ func main() {
 	path := flag.String("dir", "./", "Path to Rails application")
 	flag.Parse()
 
-	fmt.Println("Running conf_check...")
+	fmt.Println("Running clouseau...")
 
 	railsConfChecker := modules.NewRailsConfigChecker(*path)
 	railsConfChecker.Run()
