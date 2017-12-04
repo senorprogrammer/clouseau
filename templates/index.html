@@ -7,14 +7,16 @@
         <link rel="stylesheet" type="text/css" href="skeleton_tabs/skeleton-tabs.css">
         <style media="screen" type="text/css">
          * { font-size: 14px; }
-         tfoot tr th { background-color: #E0E0E0; font-size: 14px; }
-         thead tr th { background-color: #E0E0E0; font-size: 14px; }
+         tfoot tr th { background-color: #80A6D9; font-size: 14px; }
+         thead tr th { background-color: #80A6D9; font-size: 14px; }
 
          .base_is_empty { background-color: #80A6D9; }
          .b { font-weight: bold; }
          .c { text-align: center; }
+         .derived_element { color: #ccc; }
+         .key { background-color: #e0e0e0; padding-left: 14px !important; }
+         .native_element { color: #111; }
          .prod_has_same { background-color: #fE5978; }
-         .sidebar { background-color: #E0E0E0; padding-left: 14px !important; }
          .t { vertical-align: top; }
         </style>
     </head>
@@ -71,9 +73,9 @@
                         {{with .RailsConfigChecker}}
                         {{range $idx, $key := .Keys}}
                         <tr>
-                            <td class="sidebar b">{{$key}}</td>
+                            <td class="b key">{{$key}}</td>
                             {{range $.RailsConfigChecker.ConfigFiles}}
-                            {{with .EntryAt $key}}<td class="{{if .BaseIsEmpty}}base_is_empty{{end}}{{if .EqualsOther}}prod_has_same{{end}}">{{.Value}}</td>{{end}}
+                            {{with .EntryAt $key}}<td class="{{if .Derived}}derived_element{{else}}native_element{{end}}{{if .BaseIsEmpty}}base_is_empty{{end}}{{if .EqualsOther}}prod_has_same{{end}}">{{.Value}}</td>{{end}}
                             {{end}}
                         </tr>
                         {{end}}
@@ -102,7 +104,7 @@
                         {{with .ConfigChecker}}
                         {{range $key, $paths := .Results}}
                         <tr>
-                            <td class="b t">{{$key}}</td>
+                            <td class="b t key">{{$key}}</td>
                             <td>
                             {{range $path := $paths}}
                                 <div>{{$path}}</div>
@@ -127,7 +129,7 @@
                         {{with .FigaroChecker}}
                         {{range $key, $paths := .Results}}
                         <tr>
-                            <td class="b t">{{$key}}</td>
+                            <td class="b t key">{{$key}}</td>
                             <td>
                             {{range $path := $paths}}
                                 <div>{{$path}}</div>
@@ -152,7 +154,7 @@
                         {{with .EnvVarChecker}}
                         {{range $key, $paths := .Results}}
                         <tr>
-                            <td class="b t">{{$key}}</td>
+                            <td class="b t key">{{$key}}</td>
                             <td>
                             {{range $path := $paths}}
                                 <div>{{$path}}</div>
