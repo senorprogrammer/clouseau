@@ -5,7 +5,7 @@ import (
 	"sort"
 
 	"github.com/olekukonko/tablewriter"
-	"github.com/senorprogrammer/conf_check/modules"
+	"github.com/senorprogrammer/clouseau/modules"
 )
 
 type TableData struct {
