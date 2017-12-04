@@ -72,6 +72,9 @@ func (checker *RailsConfigChecker) Len() int {
  */
 func (checker *RailsConfigChecker) analyzeBaseConfig() {
 	baseConfig := checker.baseConfig()
+	if baseConfig == nil {
+		return
+	}
 
 	for _, configEntry := range baseConfig.Entries {
 		configEntry.BaseIsEmpty = (configEntry.Value == "")
