@@ -18,7 +18,52 @@
          .native_element { color: #111; }
          .prod_has_same { background-color: #fE5978; }
          .t { vertical-align: top; }
+
+
+         ul.tab-nav {
+             list-style: none;
+             border-bottom: 1px solid #bbb;
+             padding-left: 5px;
+         }
+
+         ul.tab-nav li {
+             display: inline;
+         }
+
+         ul.tab-nav li a.button {
+             border-bottom-left-radius: 0;
+             border-bottom-right-radius: 0;
+             margin-bottom: -1px;
+             border-bottom: none;
+         }
+
+         ul.tab-nav li a.active.button {
+             border-bottom: 1px solid #fff;
+         }
+
+         .tab-content .tab-pane {
+             display: none;
+         }
+
+         .tab-content .tab-pane.active {
+             display: block;
+         }
         </style>
+        <script>
+         $(function() {
+             $('ul.tab-nav li a.button').click(function() {
+                 var href = $(this).attr('href');
+
+                 $('li a.active.button', $(this).parent().parent()).removeClass('active');
+                 $(this).addClass('active');
+
+                 $('.tab-pane.active', $(href).parent()).removeClass('active');
+                 $(href).addClass('active');
+
+                 return false;
+             });
+         });
+        </script>
     </head>
     <body>
         <ul class="tab-nav">
