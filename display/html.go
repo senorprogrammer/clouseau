@@ -4,6 +4,8 @@ import (
 	"html/template"
 	"os"
 	"os/exec"
+	// "strings"
+	"path/filepath"
 
 	"github.com/gobuffalo/packr"
 	"github.com/senorprogrammer/clouseau/modules"
@@ -11,7 +13,8 @@ import (
 
 type HtmlData struct {
 	Keys               []string
-	OutputPath         string
+	OutputDir          string
+	OutputFile         string
 	EnvVarChecker      *modules.ConfigChecker
 	ConfigChecker      *modules.ConfigChecker
 	FigaroChecker      *modules.ConfigChecker
@@ -24,11 +27,14 @@ func NewHtmlData(envVarChecker, configChecker, figaroChecker *modules.ConfigChec
 		ConfigChecker:      configChecker,
 		FigaroChecker:      figaroChecker,
 		RailsConfigChecker: railsConfChecker,
-		OutputPath:         "./output/clouseau.html",
+		OutputDir:          "clouseau",
+		OutputFile:         "index.html",
 	}
 
 	return &data
 }
+
+/* -------------------- Public Functions -------------------- */
 
 func (data *HtmlData) Render() {
 	box := packr.NewBox("../templates")
@@ -37,7 +43,7 @@ func (data *HtmlData) Render() {
 		panic(err)
 	}
 
-	output, err := os.Create(data.OutputPath)
+	output, err := os.Create(data.outputPath())
 	defer output.Close()
 	if err != nil {
 		panic(err)
@@ -50,7 +56,19 @@ func (data *HtmlData) Render() {
 }
 
 func (data *HtmlData) Show() {
-	if err := exec.Command("open", data.OutputPath).Run(); err != nil {
+	if err := exec.Command("open", data.outputPath()).Run(); err != nil {
 		panic(err)
 	}
+}
+
+/* -------------------- Private Functions -------------------- */
+
+func (data *HtmlData) outputPath() string {
+	path := filepath.Join(data.OutputDir, data.OutputFile)
+	err := os.MkdirAll(data.OutputDir, os.ModePerm)
+	if err != nil {
+		panic(err)
+	}
+
+	return path
 }

@@ -90,6 +90,7 @@ func (checker *ConfigChecker) merge(results map[string][]string) {
 func (checker *ConfigChecker) sanitizeKey(key string) string {
 	/* HTML-escaped single quote to single quote */
 	key = strings.Replace(key, "&#39;", "'", -1)
+	key = strings.Replace(key, "&quot;", "'", -1)
 
 	/* Double quote to single quote */
 	key = strings.Replace(key, "\"", "'", -1)
