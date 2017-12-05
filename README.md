@@ -9,7 +9,14 @@
 
 A configuration inspector/checker for Ruby on Rails.
 
-Clouseau will analyze your Rails app and provide information about the following configuration uses.
+Clouseau analyzes your Rails app and provides information about your configuration.
+
+It helps answer the following questions:
+
+* Which config values are being executed in which environment?
+* Do any of those values seem suspicious?
+* Where in my Rails app are those config values used?
+* Where in my Rails app am I using environment variables?
 
 <img src="./images/clouseau_ui.png" alt="clouseau ui example" />
 
@@ -52,7 +59,7 @@ If you're currently in your Rails directory, you can just run `clouseau` directl
 
 ## Output
 
-Clouseau generates a static HTML report about your configuration values and their use. After it has run, it will automatically open the resulting HTML page. This file can be found in `output/index.html`.
+Clouseau generates a static HTML report about your configuration values and their use. After it has run, it will automatically open the resulting HTML page. This file can be found in `clouseau/index.html`.
 
 ## Development
 
