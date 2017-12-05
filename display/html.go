@@ -24,7 +24,7 @@ func NewHtmlData(envVarChecker, configChecker, figaroChecker *modules.ConfigChec
 		ConfigChecker:      configChecker,
 		FigaroChecker:      figaroChecker,
 		RailsConfigChecker: railsConfChecker,
-		OutputPath:         "./clouseau.html",
+		OutputPath:         "./output/clouseau.html",
 	}
 
 	return &data
