@@ -4,11 +4,10 @@
 ██║     ██║     ██║   ██║██║   ██║███████╗█████╗  ███████║██║   ██║
 ██║     ██║     ██║   ██║██║   ██║╚════██║██╔══╝  ██╔══██║██║   ██║
 ╚██████╗███████╗╚██████╔╝╚██████╔╝███████║███████╗██║  ██║╚██████╔╝
- ╚═════╝╚══════╝ ╚═════╝  ╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ 
-                                                                   
+ ╚═════╝╚══════╝ ╚═════╝  ╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝
 </pre>
 
-A configuration inspector/checker for Ruby on Rails. 
+A configuration inspector/checker for Ruby on Rails.
 
 Clouseau will analyze your Rails app and provide information about the following configuration uses.
 
